@@ -1,7 +1,3 @@
-既然你已经写出了这么棒的工具，GitHub 的 README 应该突出你的跨学科背景（法律+编程）以及这个工具的实用主义。
-
-由于你简历里提到了“在读计算机学位”，这个 README 是证明你“动手能力”的绝佳窗口。我为你构思了一个既专业又带点极简极客范儿的模版：
-
 ⚖️ GDPR Master Quiz - 轻量级法律合规刷题系统
 🚀 项目初衷
 在准备 CIPP/E (Certified Information Privacy Professional/Europe) 或 GDPR 相关认证时，我发现市面上的题库系统要么过于笨重，要么不支持自定义文本导入。
