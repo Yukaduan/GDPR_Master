@@ -6,44 +6,131 @@
     <title>GDPR 刷题系统 - 法与科技实验室</title>
     <style>
         :root {
-            --primary: #2563eb; --primary-hover: #1d4ed8; --bg: #f1f5f9; --card-bg: #ffffff;
-            --text: #0f172a; --text-secondary: #64748b; --border: #e2e8f0;
-            --success: #22c55e; --success-bg: #f0fdf4; --error: #ef4444; --error-bg: #fef2f2;
-            --radius: 16px; --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --success-bg: #f0fdf4;
+            --error: #ef4444;
+            --error-bg: #fef2f2;
+            --radius: 16px;
+            --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
+
         body.dark-mode {
-            --primary: #60a5fa; --primary-hover: #3b82f6; --bg: #0f172a; --card-bg: #1e293b;
-            --text: #f8fafc; --text-secondary: #94a3b8; --border: #334155;
-            --success: #4ade80; --success-bg: #064e3b; --error: #f87171; --error-bg: #7f1d1d;
+            --primary: #60a5fa;
+            --primary-hover: #3b82f6;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --success: #4ade80;
+            --success-bg: #064e3b;
+            --error: #f87171;
+            --error-bg: #7f1d1d;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: 0.3s; }
-        header { background: var(--card-bg); padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        
+        body { background-color: var(--bg); color: var(--text); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; transition: background-color 0.3s, color 0.3s; }
+
+        /* Header */
+        header { background: var(--card-bg); padding: 1rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px); background-color: rgba(255, 255, 255, 0.9); }
+        body.dark-mode header { background-color: rgba(30, 41, 59, 0.9); }
+        h1 { font-size: 1.2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+        
+        /* Main Layout */
         main { flex: 1; width: 100%; max-width: 800px; margin: 2rem auto; padding: 0 1.5rem; }
-        .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 2rem; border: 1px solid var(--border); }
-        #setup-area, #quiz-area, #result-area { display: none; }
-        .active { display: block !important; }
-        textarea { width: 100%; height: 200px; margin: 1rem 0; padding: 1rem; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); color: var(--text); resize: vertical; }
-        .scenario { background: var(--bg); padding: 1.25rem; border-left: 4px solid var(--primary); border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); white-space: pre-line; }
-        .question-text { font-size: 1.15rem; font-weight: 700; margin-bottom: 1.5rem; }
-        .option { display: flex; padding: 1rem; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; margin-bottom: 0.75rem; transition: 0.2s; }
-        .option:hover:not(.disabled) { border-color: var(--primary); background: var(--bg); }
-        .option.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.1); }
+
+        /* Card Styles */
+        .card { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); padding: 2rem; margin-bottom: 2rem; border: 1px solid var(--border); transition: transform 0.3s ease, opacity 0.3s ease; }
+        
+        /* Import Area */
+        #setup-area { display: none; }
+        #setup-area.active { display: block; animation: fadeIn 0.4s ease; }
+        textarea { width: 100%; height: 200px; margin: 1rem 0; padding: 1rem; border-radius: 8px; border: 2px solid var(--border); background: var(--bg); color: var(--text); font-family: monospace; resize: vertical; outline: none; transition: border-color 0.2s; }
+        textarea:focus { border-color: var(--primary); }
+
+        /* Quiz Area */
+        #quiz-area { display: none; }
+        #quiz-area.active { display: block; animation: slideUp 0.4s ease; }
+
+        /* Result Area */
+        #result-area { display: none; text-align: center; }
+        #result-area.active { display: block; animation: zoomIn 0.4s ease; }
+        .score-circle { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--primary) 0%, var(--border) 0%); margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; position: relative; transition: background 1s ease-out; }
+        .score-circle::before { content: ''; position: absolute; width: 130px; height: 130px; background: var(--card-bg); border-radius: 50%; }
+        .score-number { position: relative; font-size: 2.5rem; font-weight: 800; color: var(--primary); }
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .result-item { background: var(--bg); padding: 1rem; border-radius: 8px; }
+        .result-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .result-value { font-size: 1.5rem; font-weight: 700; }
+
+        /* Review List */
+        #review-list { margin-top: 2rem; text-align: left; }
+        .review-item { background: var(--bg); padding: 1.25rem; border-radius: 8px; margin-bottom: 0.75rem; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .review-item:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .review-item.correct { border-left: 4px solid var(--success); }
+        .review-item.wrong { border-left: 4px solid var(--error); }
+        .review-item.unanswered { border-left: 4px solid var(--text-secondary); }
+        .review-details { font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; flex: 1; }
+        .review-badges { display: flex; gap: 0.5rem; }
+        .badge { padding: 0.25rem 0.6rem; border-radius: 6px; font-weight: bold; font-size: 0.8rem; white-space: nowrap; }
+        .badge-user { background: var(--border); color: var(--text); }
+        .badge-correct { background: var(--success-bg); color: var(--success); }
+
+        /* Scenario & Question */
+        .scenario { background: var(--bg); padding: 1.25rem; border-left: 4px solid var(--primary); border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); white-space: pre-line; }
+        .question-text { font-size: 1.2rem; font-weight: 700; margin-bottom: 1.5rem; white-space: pre-line; line-height: 1.5; }
+
+        /* Options */
+        .option { display: flex; padding: 1rem 1.25rem; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.2s; align-items: flex-start; margin-bottom: 0.75rem; position: relative; overflow: hidden; }
+        .option:hover:not(.disabled) { border-color: var(--primary); background: var(--bg); transform: translateY(-2px); }
+        .option.selected { border-color: var(--primary); background: rgba(37, 99, 235, 0.05); }
         .option.correct { border-color: var(--success); background: var(--success-bg); }
         .option.wrong { border-color: var(--error); background: var(--error-bg); }
+        .option-tag { font-weight: 800; margin-right: 1rem; min-width: 25px; }
         .option.disabled { cursor: default; pointer-events: none; }
-        .option-tag { font-weight: 800; margin-right: 1rem; }
-        .explanation { margin-top: 1.5rem; padding: 1.2rem; background: var(--bg); border-radius: 10px; display: none; }
-        .show { display: block !important; }
-        button { cursor: pointer; padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
+
+        /* Explanation */
+        .explanation { margin-top: 1.5rem; padding: 1.5rem; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); display: none; }
+        .explanation.show { display: block; animation: fadeIn 0.5s ease; }
+        
+        /* Buttons */
+        button { cursor: pointer; padding: 0.6rem 1.2rem; border-radius: 8px; border: none; font-weight: 600; transition: all 0.2s; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-secondary); }
-        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 1rem 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
-        .review-item { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; background: var(--bg); border-left: 4px solid var(--border); text-align: left; }
-        .is-correct { border-left-color: var(--success); }
-        .is-wrong { border-left-color: var(--error); }
-        .score-circle { width: 100px; height: 100px; border-radius: 50%; border: 8px solid var(--primary); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; }
+        .btn-outline:hover { border-color: var(--text-secondary); color: var(--text); }
+        .btn-icon { padding: 0.5rem; font-size: 1.2rem; background: transparent; color: var(--text); }
+
+        /* Progress Bar */
+        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 1.5rem 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Footer */
+        footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.85rem; margin-top: auto; border-top: 1px solid var(--border); background: var(--card-bg); }
+        .lab-logo { font-weight: 700; color: var(--primary); text-decoration: none; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .card { padding: 1.25rem; }
+            header { padding: 1rem; }
+            h1 { font-size: 1rem; }
+            .review-item { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+            .review-badges { width: 100%; justify-content: flex-start; }
+            .review-details span { display: none; /* 手机端隐藏过长的截断文字 */ }
+        }
     </style>
 </head>
 <body>
@@ -51,207 +138,434 @@
 <header>
     <h1>GDPR Master Quiz</h1>
     <div style="display: flex; gap: 0.5rem;">
-        <button class="btn-outline" onclick="toggleView('setup')">⚙️ 题库</button>
-        <button onclick="toggleTheme()">🌓</button>
+        <button class="btn-outline" onclick="toggleView('setup')" style="font-size: 0.8rem;">⚙️ 题库</button>
+        <button class="btn-icon" onclick="toggleTheme()">🌓</button>
     </div>
 </header>
 
 <main>
+    <!-- 1. 设置/导入区域 -->
     <div id="setup-area" class="card">
         <h2>📥 导入题库</h2>
-        <textarea id="raw-input" placeholder="支持 SCENARIO(1-3) 格式题干..."></textarea>
-        <div style="display: flex; justify-content: space-between;">
-            <button class="btn-outline" onclick="loadDemo()">演示题目</button>
-            <button class="btn-primary" onclick="startQuiz()">开始刷题</button>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">请将题目文本（包含题号、选项、Answer、Explanation）完整粘贴到下方：</p>
+        <textarea id="raw-input" placeholder="例如：
+1. Question text...
+A. Option...
+B. Option...
+Answer: A
+Explanation: ..."></textarea>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+            <span id="parse-status" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-outline" onclick="loadDemo()">重置为演示题</button>
+                <button class="btn-primary" onclick="startQuiz()">开始刷题</button>
+            </div>
         </div>
     </div>
 
+    <!-- 2. 答题区域 -->
     <div id="quiz-area">
-        <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-            <span id="progress-text"></span>
-            <span id="current-accuracy" style="color: var(--primary); font-weight: bold;"></span>
+        <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-secondary); font-size: 0.9rem;">
+            <span id="progress-text">题目 1 / 10</span>
+            <span>正确率: <span id="current-accuracy" style="font-weight: bold; color: var(--primary);">0%</span></span>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
         <div class="card">
-            <div id="scenario-box" class="scenario"></div>
-            <div class="question-text" id="question-text"></div>
+            <div id="scenario-box" class="scenario" style="display:none;"></div>
+            <div class="question-text" id="question-text">Loading...</div>
             <div id="options-container"></div>
-            <div id="explanation-box" class="explanation">
-                <div id="answer-display" style="font-weight: bold; margin-bottom: 0.5rem;"></div>
-                <div id="explanation-text" style="font-size: 0.9rem; color: var(--text-secondary);"></div>
+
+            <div class="explanation" id="explanation-box">
+                <div style="margin-bottom: 0.5rem; font-weight: 700; color: var(--success);" id="answer-display"></div>
+                <div style="font-weight: 700; margin-bottom: 0.5rem;">📝 解析：</div>
+                <div id="explanation-text" style="color: var(--text-secondary); white-space: pre-line;"></div>
             </div>
         </div>
-        <div style="display: flex; justify-content: space-between;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <button class="btn-outline" id="prev-btn" onclick="changeQuestion(-1)">⬅️ 上一题</button>
+            <button class="btn-outline" id="back-result-btn" onclick="showResults()" style="display: none; border-color: var(--primary); color: var(--primary);">📊 返回复盘</button>
             <button class="btn-primary" id="next-btn" onclick="changeQuestion(1)">下一题 ➡️</button>
         </div>
     </div>
 
-    <div id="result-area" class="card" style="text-align: center;">
+    <!-- 3. 结算区域 -->
+    <div id="result-area" class="card">
         <h2>🎉 练习完成！</h2>
-        <div class="score-circle" id="final-score">0%</div>
-        <div style="margin-bottom: 2rem; color: var(--text-secondary);">
-            共 <span id="res-total"></span> 题 | 答对 <span id="res-correct"></span> 题
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">恭喜你完成了所有题目</p>
+        
+        <div class="score-circle" id="final-score-circle">
+            <div class="score-number" id="final-score-number">0%</div>
         </div>
-        <button class="btn-primary" onclick="restartQuiz()">🔄 重新开始</button>
-        <div id="review-list" style="margin-top: 2rem;"></div>
+
+        <div class="result-grid">
+            <div class="result-item">
+                <div class="result-label">总题数</div>
+                <div class="result-value" id="res-total">0</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">答对</div>
+                <div class="result-value" id="res-correct" style="color: var(--success);">0</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">答错</div>
+                <div class="result-value" id="res-wrong" style="color: var(--error);">0</div>
+            </div>
+            <div class="result-item">
+                <div class="result-label">未答</div>
+                <div class="result-value" id="res-unanswered">0</div>
+            </div>
+        </div>
+
+        <!-- 新增复盘列表区域 -->
+        <div id="review-list"></div>
+
+        <button class="btn-primary" onclick="restartQuiz()" style="margin-top: 2rem; width: 100%; justify-content: center;">🔄 清空进度并重新开始</button>
     </div>
 </main>
 
-<script>
-    let questions = [];
-    let currentIndex = 0;
-    let answers = {};
-    let demoData = `SCENARIO(1-2)\nAnna works at a University. She loses a laptop with unencrypted student data.\n\n1. What is the first step Anna should take?\nA. Inform the students\nB. Report to the DPO\nC. Format the laptop\nD. Resign\nAnswer: B\nExplanation: 根据GDPR，发生数据泄露应立即上报DPO。\n\n2. This incident is a breach of:\nA. Confidentiality\nB. Availability\nC. Integrity\nD. All of above\nAnswer: A\nExplanation: 数据丢失导致非授权访问风险。`;
+<footer>
+    由 <a href="#" class="lab-logo">@法与科技实验室</a> 开发
+</footer>
 
+<script>
+    // --- Data & State ---
+    let questions =[];
+    let currentIndex = 0;
+    let answers = {}; // { 0: 'A', 1: 'C' }
+    let isFinished = false; // 标记是否已完成全套题
+    
+    // 替换了用户提供的含Bug演示题用以直接测试
+    let demoData = `23. Under the GDPR,who would be LEAST likely to be allowed to engage in the collection,use,and disclosure of a data subject's sensitive medical information without the data subject's knowledge or consent?
+A. A member of the judiciary involved in adjudicating a legal dispute involving the data subject and concerning the health of the data subject.
+B. A public authority responsible for public health,where the sharing of such information is considered necessary for the protection of the general populace.
+C. A health professional involved in the medical care for the data subject,where the data subject's life hinges on the timely dissemination of such information.
+D. A journalist writing an article relating to the medical condition in question,who believes that the publication of such information is in the public interest.
+Answer:D
+Explanation
+GDPR 将有关健康的数据定义为特殊类别的个人数据，受特定处理条件和保护措施的约束。 GDPR 禁止处理此类数据，除非第9条中的例外情况之一适用。这些例外之一是数据主体的明确同意...
+在给定的情况下，记者不属于任何这些例外情况。记者发表报道只是为了追求自己的利益，而报道可能符合也可能不符合公众利益。
+
+24. With the issue of consent,the GDPR allows member states some choice regarding what? 
+A.The mechanisms through which consent may be communicated
+B.The circumstances in which silence or inactivity may constitute consent
+C.The age at which children must be required to obtain parental consent
+D.The time frame in which data subjects are allowed to withdraw their consent
+Answer:C
+Explanation
+GDPR 规定，对于直接向儿童提供信息社会服务的情况，儿童年龄低于16岁，处理他们的个人数据将需要得到其父母或法定监护人的同意。但是，GDPR 也允许各成员国通过立法将这个年龄限制降低到13岁。`;
+
+    // --- Parser ---
     function parseText(text) {
         const lines = text.split(/\r?\n/);
-        const result = [];
-        let currentScenario = "";
+        const result =[];
         let curr = null;
+        let scenario = "";
 
-        const rgxScenario = /^SCENARIO/i;
-        const rgxStart = /^\s*(\d+)[\.\、]\s+(.+)/;
-        const rgxOpt = /^\s*([A-D])[\.\、]\s+(.+)/;
+        // 核心修复点：将正则表达式中的 \s+ 修改为 \s*，兼容点号后面没有空格的格式
+        const rgxStart = /^\s*(\d+)[\.\、]\s*(.+)/;
+        const rgxOpt = /^\s*([A-D])[\.\、]\s*(.+)/; 
         const rgxAns = /(?:Answer|Ans|答案)[:：]\s*([A-D])/i;
-
-        for (let i = 0; i < lines.length; i++) {
+        
+        for (let i=0; i<lines.length; i++) {
             let line = lines[i].trim();
             if (!line) continue;
 
-            if (rgxScenario.test(line)) {
-                currentScenario = line + "\n";
-                for (let j = i + 1; j < lines.length; j++) {
-                    if (rgxStart.test(lines[j])) { i = j - 1; break; }
-                    currentScenario += lines[j] + "\n";
+            // Scenario detection
+            if (/^SCENARIO/i.test(line)) {
+                scenario = line + "\n";
+                // Look ahead for scenario content
+                for(let j=i+1; j<lines.length; j++){
+                    if(rgxStart.test(lines[j])) { i=j-1; break; }
+                    scenario += lines[j] + "\n";
                 }
                 continue;
             }
 
+            // New Question
             let matchQ = line.match(rgxStart);
             if (matchQ) {
                 if (curr) result.push(curr);
-                curr = { id: matchQ[1], text: matchQ[2], options: {}, scenario: currentScenario, explanation: "" };
+                curr = { 
+                    id: matchQ[1], 
+                    text: matchQ[2], 
+                    options: {}, 
+                    scenario: scenario.trim(), 
+                    explanation: "" 
+                };
                 continue;
             }
 
             if (!curr) continue;
 
+            // Option
             let matchOpt = line.match(rgxOpt);
             if (matchOpt && !curr.answer) {
                 curr.options[matchOpt[1]] = matchOpt[2];
-            } else if (rgxAns.test(line)) {
-                curr.answer = line.match(rgxAns)[1].toUpperCase();
+                continue;
+            }
+
+            // Answer
+            let matchAns = line.match(rgxAns);
+            if (matchAns) {
+                curr.answer = matchAns[1].toUpperCase();
+                // Try capture explanation on same line
+                if (line.toLowerCase().includes("explanation")) {
+                    let split = line.split(/explanation|解析/i);
+                    if(split[1]) curr.explanation = split[1];
+                }
+                continue;
+            }
+
+            // Explanation block
+            if (/^Explanation|^解析/i.test(line)) {
+                let content = line.replace(/^Explanation|^解析/i, '').trim();
+                curr.explanation += content + "\n";
+                continue;
+            }
+
+            // Append content
+            if (curr.answer) {
+                curr.explanation += line + "\n";
             } else {
-                curr.explanation += line + " ";
+                // Append to option or text
+                let keys = Object.keys(curr.options);
+                if (keys.length > 0) curr.options[keys[keys.length-1]] += " " + line;
+                else curr.text += " " + line;
             }
         }
         if (curr) result.push(curr);
         return result;
     }
 
+    // --- Logic ---
+    function init() {
+        const saved = localStorage.getItem('gdpr_quiz_data');
+        document.getElementById('raw-input').value = saved || demoData;
+        
+        if (!saved) {
+            toggleView('setup');
+        } else {
+            startQuiz();
+        }
+        
+        // Theme check
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    }
+
     function toggleView(view) {
-        ['setup-area', 'quiz-area', 'result-area'].forEach(id => {
-            document.getElementById(id).classList.remove('active');
-        });
-        document.getElementById(view + '-area').classList.add('active');
+        document.getElementById('setup-area').className = view === 'setup' ? 'active' : '';
+        document.getElementById('quiz-area').className = view === 'quiz' ? 'active' : '';
+        document.getElementById('result-area').className = view === 'result' ? 'active' : '';
+        
+        if (view === 'setup') {
+            document.getElementById('setup-area').classList.add('card');
+        }
+    }
+
+    function loadDemo() {
+        document.getElementById('raw-input').value = demoData;
     }
 
     function startQuiz() {
         const raw = document.getElementById('raw-input').value;
+        if (!raw.trim()) return alert("内容不能为空");
+        
         questions = parseText(raw);
-        if (questions.length === 0) return alert("无法解析题目，请检查格式");
+        if (questions.length === 0) return alert("无法识别题目，请检查格式");
+        
         localStorage.setItem('gdpr_quiz_data', raw);
-        currentIndex = 0; answers = {};
-        toggleView('quiz');
-        renderQuestion();
+        currentIndex = 0;
+        answers = {};
+        isFinished = false; // 重置完成状态
+        
+        document.getElementById('parse-status').innerText = `✅ 已加载 ${questions.length} 道题目`;
+        setTimeout(() => {
+            toggleView('quiz');
+            renderQuestion();
+        }, 500);
     }
 
     function renderQuestion() {
         const q = questions[currentIndex];
-        const uAns = answers[currentIndex];
+        const userAnswer = answers[currentIndex];
         
+        // Scenario
         const sBox = document.getElementById('scenario-box');
-        if (q.scenario) { sBox.innerText = q.scenario; sBox.style.display = 'block'; }
-        else { sBox.style.display = 'none'; }
+        if (q.scenario) {
+            sBox.style.display = 'block';
+            sBox.innerText = q.scenario;
+        } else {
+            sBox.style.display = 'none';
+        }
 
+        // Text
         document.getElementById('question-text').innerText = `${q.id}. ${q.text}`;
         document.getElementById('progress-text').innerText = `题目 ${currentIndex + 1} / ${questions.length}`;
-        document.getElementById('progress-fill').style.width = `${((currentIndex+1)/questions.length)*100}%`;
+        
+        // Progress bar
+        const pct = ((currentIndex + 1) / questions.length) * 100;
+        document.getElementById('progress-fill').style.width = `${pct}%`;
 
+        // Options
         const cont = document.getElementById('options-container');
         cont.innerHTML = '';
         ['A','B','C','D'].forEach(opt => {
             if (!q.options[opt]) return;
             const div = document.createElement('div');
-            div.className = 'option' + (uAns ? ' disabled' : '');
-            if (uAns) {
+            div.className = 'option';
+            if (userAnswer) {
+                div.classList.add('disabled');
                 if (opt === q.answer) div.classList.add('correct');
-                else if (opt === uAns) div.classList.add('wrong');
-                if (opt === uAns) div.classList.add('selected');
+                if (opt === userAnswer && opt !== q.answer) div.classList.add('wrong');
+                if (opt === userAnswer) div.classList.add('selected');
             }
-            div.onclick = () => { if(!answers[currentIndex]) { answers[currentIndex] = opt; renderQuestion(); }};
-            div.innerHTML = `<span class="option-tag">${opt}</span>${q.options[opt]}`;
+            
+            div.onclick = () => handleAnswer(opt);
+            div.innerHTML = `<span class="option-tag">${opt}.</span><span>${q.options[opt]}</span>`;
             cont.appendChild(div);
         });
 
+        // Explanation
         const expBox = document.getElementById('explanation-box');
-        if (uAns) {
+        if (userAnswer) {
             expBox.classList.add('show');
-            document.getElementById('answer-display').innerHTML = uAns === q.answer ? "✅ 正确" : `❌ 错误，正确答案是 ${q.answer}`;
-            document.getElementById('explanation-text').innerText = q.explanation.replace(/explanation|解析/i, '').trim();
-        } else expBox.classList.remove('show');
+            document.getElementById('answer-display').innerText = userAnswer === q.answer ? "✅ 回答正确" : `❌ 回答错误，正确答案是 ${q.answer}`;
+            document.getElementById('explanation-text').innerText = q.explanation.trim() || "暂无详细解析";
+        } else {
+            expBox.classList.remove('show');
+        }
 
+        // Nav buttons
         document.getElementById('prev-btn').disabled = currentIndex === 0;
-        document.getElementById('next-btn').innerText = currentIndex === questions.length - 1 ? "完成" : "下一题 ➡️";
-        updateAccuracy();
+        document.getElementById('next-btn').innerText = currentIndex === questions.length - 1 ? "完成 & 交卷" : "下一题 ➡️";
+        
+        // 如果已经交卷过一次，在界面的中间显示“返回复盘”按钮
+        const backBtn = document.getElementById('back-result-btn');
+        if (isFinished) {
+            backBtn.style.display = 'inline-flex';
+        } else {
+            backBtn.style.display = 'none';
+        }
+
+        calcStats();
     }
 
-    function updateAccuracy() {
-        let correct = 0, answered = Object.keys(answers).length;
-        Object.keys(answers).forEach(idx => { if(answers[idx] === questions[idx].answer) correct++; });
-        document.getElementById('current-accuracy').innerText = `正确率: ${answered ? Math.round(correct/answered*100) : 0}%`;
+    function handleAnswer(opt) {
+        if (answers[currentIndex]) return;
+        answers[currentIndex] = opt;
+        renderQuestion();
     }
 
-    function changeQuestion(n) {
-        if (currentIndex + n >= 0 && currentIndex + n < questions.length) {
-            currentIndex += n; renderQuestion();
-        } else if (n > 0) showResults();
+    function changeQuestion(delta) {
+        const next = currentIndex + delta;
+        if (next >= 0 && next < questions.length) {
+            currentIndex = next;
+            renderQuestion();
+        } else if (delta > 0 && next === questions.length) {
+            showResults();
+        }
+    }
+
+    // 新增：从复盘页面跳回具体题目
+    function goToQuestion(idx) {
+        currentIndex = idx;
+        toggleView('quiz');
+        renderQuestion();
+    }
+
+    function calcStats() {
+        let correct = 0;
+        let answered = 0;
+        Object.keys(answers).forEach(idx => {
+            answered++;
+            if (answers[idx] === questions[idx].answer) correct++;
+        });
+        const rate = answered === 0 ? 0 : Math.round((correct / answered) * 100);
+        document.getElementById('current-accuracy').innerText = `${rate}%`;
+        return { correct, answered, rate };
     }
 
     function showResults() {
         toggleView('result');
-        let correct = 0;
+        const stats = calcStats();
+        const total = questions.length;
+        const wrong = stats.answered - stats.correct;
+        isFinished = true; // 标记已交卷完成
+        
+        // Animate Score
+        const circle = document.getElementById('final-score-circle');
+        setTimeout(() => {
+            circle.style.background = `conic-gradient(var(--primary) ${stats.rate}%, var(--border) 0%)`;
+        }, 100);
+        document.getElementById('final-score-number').innerText = `${stats.rate}%`;
+
+        document.getElementById('res-total').innerText = total;
+        document.getElementById('res-correct').innerText = stats.correct;
+        document.getElementById('res-wrong').innerText = wrong;
+        document.getElementById('res-unanswered').innerText = total - stats.answered;
+
+        // 生成题目复盘列表
         const reviewList = document.getElementById('review-list');
-        reviewList.innerHTML = '<h3 style="margin-bottom:1rem">错题复盘 (点击可跳回查看)</h3>';
-
+        reviewList.innerHTML = '<h3 style="margin-bottom: 1rem;">📝 题目复盘（点击进入该题解析）</h3>';
+        
         questions.forEach((q, idx) => {
-            const uAns = answers[idx] || "未答";
-            const isCorrect = uAns === q.answer;
-            if (isCorrect) correct++;
-
-            const div = document.createElement('div');
-            div.className = `review-item ${isCorrect ? 'is-correct' : 'is-wrong'}`;
-            div.innerHTML = `<strong>${idx+1}. ${q.text.substring(0,30)}...</strong><br>
-                             <small>你的: ${uAns} | 正确: ${q.answer}</small>`;
-            div.onclick = () => { currentIndex = idx; toggleView('quiz'); renderQuestion(); };
-            reviewList.appendChild(div);
+            const userAnswer = answers[idx];
+            const isCorrect = userAnswer === q.answer;
+            const isUnanswered = !userAnswer;
+            
+            let statusClass = isUnanswered ? 'unanswered' : (isCorrect ? 'correct' : 'wrong');
+            
+            const item = document.createElement('div');
+            item.className = `review-item ${statusClass}`;
+            item.onclick = () => goToQuestion(idx);
+            
+            // 提取题目前25个字符方便辨认
+            let shortText = q.text.length > 25 ? q.text.substring(0, 25) + '...' : q.text;
+            
+            let html = `<div class="review-details"><strong>第 ${q.id} 题</strong> <span style="color:var(--text-secondary); margin-left:12px; font-weight:normal;">${shortText}</span></div>`;
+            html += `<div class="review-badges">`;
+            
+            if (isUnanswered) {
+                html += `<span class="badge badge-user">未作答</span>`;
+                html += `<span class="badge badge-correct">正确: ${q.answer}</span>`;
+            } else {
+                let userBg = isCorrect ? 'var(--success-bg)' : 'var(--error-bg)';
+                let userCol = isCorrect ? 'var(--success)' : 'var(--error)';
+                html += `<span class="badge" style="background:${userBg}; color:${userCol};">你的选择: ${userAnswer}</span>`;
+                
+                if (!isCorrect) {
+                    html += `<span class="badge badge-correct">正确: ${q.answer}</span>`;
+                }
+            }
+            html += `</div>`;
+            
+            item.innerHTML = html;
+            reviewList.appendChild(item);
         });
-
-        const score = Math.round(correct / questions.length * 100);
-        document.getElementById('final-score').innerText = score + "%";
-        document.getElementById('res-total').innerText = questions.length;
-        document.getElementById('res-correct').innerText = correct;
     }
 
-    function loadDemo() { document.getElementById('raw-input').value = demoData; }
-    function restartQuiz() { currentIndex = 0; answers = {}; toggleView('setup'); }
-    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
-    window.onload = () => {
-        const saved = localStorage.getItem('gdpr_quiz_data');
-        if (saved) { document.getElementById('raw-input').value = saved; startQuiz(); }
-        else toggleView('setup');
-    };
+    function restartQuiz() {
+        if (confirm("确定要清空进度重新开始吗？")) {
+            currentIndex = 0;
+            answers = {};
+            isFinished = false; // 重置交卷状态
+            toggleView('quiz');
+            renderQuestion();
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    }
+
+    window.onload = init;
 </script>
 </body>
 </html>
